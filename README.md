@@ -13,5 +13,5 @@
 |/notes/{id}|         Put| 更新一个存在的Note|
 |/notes |   Get| 获取所有的Note|
 |/notes/{id} |   Get| 根据Id获取对应的Note|
-|/notes/tasks/{id}   Get|获取相应Task的Note|
+|/notes/tasks/{id}   |Get|获取相应Task的Note|
 |/notes/{id}     |    Delete|删除对应Id的Note|

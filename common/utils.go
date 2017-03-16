@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 )
 
 type (
@@ -17,6 +18,7 @@ type (
 	}
 )
 
+//错误处理
 func DisplayAppError(w http.ResponseWriter, handlerError error, message string, code int) {
 	errObj := appError{
 		Error:      handlerError.Error(),
@@ -29,4 +31,31 @@ func DisplayAppError(w http.ResponseWriter, handlerError error, message string, 
 	if j, err := json.Marshal(errorResource{Data: errObj}); err == nil {
 		w.Write(j)
 	}
+}
+
+type configuration struct {
+	Server string
+	MongoDBHost string
+	DBUser string
+	DBPwd string
+	DataBase string
+}
+var AppConfig configuration
+
+func initConfig()  {
+	loadAppConfig()
+}
+func loadAppConfig()  {
+	file,err:=os.Open("commmon/config.json")
+	defer file.Close()
+	if err!=nil {
+		log.Fatalf("[loadConfig]: %s\n",err)
+	}
+	decoder:=json.NewDecoder(file)
+	AppConfig = configuration{}
+	err=decoder.Decode(&AppConfig)
+	if err!=nil {
+		log.Fatalf("[loadConfig]: %s\n",err)
+	}
+
 }

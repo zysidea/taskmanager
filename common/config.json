@@ -1,0 +1,7 @@
+{
+  "Server":"127.0.0.1",
+  "MongoDBHost":"127.0.0.1",
+  "DBUser":"",
+  "DBPwd":"",
+  "DataBase":"taskdb"
+}

@@ -34,28 +34,29 @@ func DisplayAppError(w http.ResponseWriter, handlerError error, message string, 
 }
 
 type configuration struct {
-	Server string
+	Server      string
 	MongoDBHost string
-	DBUser string
-	DBPwd string
-	DataBase string
+	DBUser      string
+	DBPwd       string
+	DataBase    string
 }
+
 var AppConfig configuration
 
-func initConfig()  {
+func initConfig() {
 	loadAppConfig()
 }
-func loadAppConfig()  {
-	file,err:=os.Open("commmon/config.json")
+func loadAppConfig() {
+	file, err := os.Open("commmon/config.json")
 	defer file.Close()
-	if err!=nil {
-		log.Fatalf("[loadConfig]: %s\n",err)
+	if err != nil {
+		log.Fatalf("[loadConfig]: %s\n", err)
 	}
-	decoder:=json.NewDecoder(file)
+	decoder := json.NewDecoder(file)
 	AppConfig = configuration{}
-	err=decoder.Decode(&AppConfig)
-	if err!=nil {
-		log.Fatalf("[loadConfig]: %s\n",err)
+	err = decoder.Decode(&AppConfig)
+	if err != nil {
+		log.Fatalf("[loadConfig]: %s\n", err)
 	}
 
 }

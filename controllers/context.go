@@ -7,6 +7,7 @@ import (
 
 type Context struct {
 	MongoSession *mgo.Session
+	User string
 }
 
 //关闭mongodb连接
@@ -20,5 +21,8 @@ func (c *Context) GetCollection(tableName string) *mgo.Collection {
 //获取一个新的Context
 func NewContext() *Context  {
 	session:=common.GetSession().Copy()
-	return &Context{session}
+	return &Context{
+		session,
+		"",
+	}
 }

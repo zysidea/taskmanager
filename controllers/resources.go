@@ -5,7 +5,7 @@ import "taskmanager/models"
 type (
 	//POST /user/register
 	UserResource struct {
-		Data models.User `json:data`
+		Data models.User `json:"data"`
 	}
 	//POST /user/login
 	LoginResource struct {

@@ -3,11 +3,13 @@ package common
 import (
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/gommon/log"
+	"log"
+	"crypto/rsa"
+	"github.com/dgrijalva/jwt-go/request"
+	"github.com/gorilla/context"
 )
 
 //使用非对称加密
@@ -18,35 +20,50 @@ const (
 
 //privateKey 用来注册JWT，publicKey 用来验证HTTP请求
 var (
-	verifyKey, signKey []byte
+	verifyKey *rsa.PublicKey
+	signKey *rsa.PrivateKey
 )
 
+type AppClaims struct {
+	UserName string `json:"username"`
+	Role     string `json:"role"`
+	jwt.StandardClaims
+}
+
 func initKeys() {
-	var err error
-	signKey, err = ioutil.ReadFile(privateKeyPath)
+	signBytes, err := ioutil.ReadFile(privateKeyPath)
 	if err != nil {
 		log.Fatalf("[initKeys]: %s\n", err)
 	}
-	verifyKey, err = ioutil.ReadFile(publicKeyPath)
+	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
 	if err != nil {
 		log.Fatalf("[initKeys]: %s\n", err)
-		panic(err)
+	}
+	verifyBytes, err := ioutil.ReadFile(publicKeyPath)
+	if err != nil {
+		log.Fatalf("[initKeys]: %s\n", err)
+	}
+	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	if err != nil {
+		log.Fatalf("[initKeys]: %s\n", err)
 	}
 }
 
 //获取JWT
 func GenerateJWT(name, role string) (string, error) {
+	claims := AppClaims{
+		name,
+		role,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * 20).Unix(),
+			Issuer:    "admin",
+		},
+	}
+
+
+
 	//用rsa256
-	t := jwt.New(jwt.GetSigningMethod("RS256"))
-
-	t.Claims["iss"] = "admin"
-	t.Claims["UserInfo"] = struct {
-		Name string
-		Role string
-	}{name, role}
-
-	//设置过期时间
-	t.Claims["expired"] = time.Now().Add(20 * time.Minute).Unix()
+	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	tokenString, err := t.SignedString(signKey)
 	if err != nil {
 		return "", err
@@ -57,14 +74,11 @@ func GenerateJWT(name, role string) (string, error) {
 //验证JWT的中间件
 func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
-	header := r.Header
-	tokenString := header["Authorization"][0]
-	//Bearer token....，截取token
-	tokenString = strings.Split(tokenString, " ")[1]
-	//对token进行验证
-	token, err := jwt.Parse(tokenString, func(*jwt.Token) (interface{}, error) {
+
+	token, err := request.ParseFromRequestWithClaims(r, request.OAuth2Extractor, &AppClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return verifyKey, nil
 	})
+
 	if err != nil {
 		switch err.(type) {
 		//JWT验证错误
@@ -100,6 +114,7 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	}
 
 	if token.Valid {
+		context.Set(r, "user", token.Claims.(*AppClaims).UserName)
 		next(w, r)
 	} else {
 		DisplayAppError(

@@ -26,3 +26,15 @@ type (
 		Token string      `json:"token"`
 	}
 )
+
+type(
+	//POST /tasks
+	//Get  /tasks/id
+	TaskResource struct {
+		Data models.Task `json:"data"`
+	}
+	//Get /tasks
+	TasksResource struct {
+		Data []models.Task `json:"data"`
+	}
+)

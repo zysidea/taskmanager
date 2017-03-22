@@ -22,10 +22,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &dataResource.Data
-	context := NewContext()
-	defer context.Close()
-	cx := context.GetCollection("users")
-	repo := &data.UserRepository{cx}
+	mc := NewContext()
+	defer mc.Close()
+	context := mc.GetCollection("users")
+	repo := &data.UserRepository{context}
 
 
 	if err:=repo.CreateUser(user);err!=nil{
@@ -73,10 +73,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Email:loginModel.Email,
 		Password:loginModel.Password,
 	}
-	context:=NewContext()
-	defer context.Close()
-	cx:=context.GetCollection("users")
-	repo:=&data.UserRepository{cx}
+	mc := NewContext()
+	defer mc.Close()
+	context := mc.GetCollection("users")
+	repo := &data.UserRepository{context}
 
 	if user,err:=repo.Login(loginUser);err!=nil{
 		common.DisplayAppError(

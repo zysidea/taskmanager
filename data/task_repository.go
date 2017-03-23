@@ -14,7 +14,7 @@ type TaskRepository struct {
 func (r *TaskRepository) CreateTask(task *models.Task) error {
 	objId := bson.NewObjectId()
 	task.Id = objId
-	task.CreateOn = time.Now()
+	task.CreateOn = time.Now().Unix()
 	task.Status = "Created"
 	err := r.C.Insert(task)
 	return err

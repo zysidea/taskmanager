@@ -32,6 +32,12 @@ func DisplayAppError(w http.ResponseWriter, handlerError error, message string, 
 		w.Write(j)
 	}
 }
+//默认的处理
+func DisplayUnexceptAppError(w http.ResponseWriter,handlerError error)  {
+	DisplayAppError(w,handlerError,"An unexcepted error has occurred",http.StatusInternalServerError)
+}
+
+
 
 type configuration struct {
 	Server      string

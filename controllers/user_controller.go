@@ -39,12 +39,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	user.HashPassword=nil
 	if j,err:=json.Marshal(UserResource{Data:*user});err!=nil{
-		common.DisplayAppError(
-			w,
-			err,
-			"An unexcepted error has occurred",
-			http.StatusInternalServerError,
-		)
+		common.DisplayUnexceptAppError(w,err)
 	}else {
 		w.Header().Set("Content-Type","application/json")
 		w.WriteHeader(http.StatusCreated)
@@ -105,12 +100,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 		j,err:=json.Marshal(AuthUserResource{Data:authUser})
 		if err != nil {
-			common.DisplayAppError(
-				w,
-				err,
-				"An unexpected error has occurred",
-				http.StatusInternalServerError,
-			)
+			common.DisplayUnexceptAppError(w,err)
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write(j)

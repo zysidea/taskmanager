@@ -19,7 +19,7 @@ func (c *MongoContext) GetCollection(tableName string) *mgo.Collection {
 	return c.MongoSession.DB(common.AppConfig.DataBase).C(tableName)
 }
 //获取一个新的Context
-func NewContext() *MongoContext {
+func NewMongoContext() *MongoContext {
 	session:=common.GetSession().Copy()
 	return &MongoContext{
 		session,

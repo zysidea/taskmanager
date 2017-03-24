@@ -8,6 +8,7 @@ import (
 	"taskmanager/models"
 )
 
+//POST /user/register
 func Register(w http.ResponseWriter, r *http.Request) {
 	var dataResource UserResource
 	err := json.NewDecoder(r.Body).Decode(&dataResource)
@@ -22,13 +23,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &dataResource.Data
-	mc := NewContext()
+	mc := NewMongoContext()
 	defer mc.Close()
 	context := mc.GetCollection("users")
 	repo := &data.UserRepository{context}
 
-
-	if err:=repo.CreateUser(user);err!=nil{
+	if err := repo.CreateUser(user); err != nil {
 		common.DisplayAppError(
 			w,
 			err,
@@ -37,23 +37,23 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	user.HashPassword=nil
-	if j,err:=json.Marshal(UserResource{Data:*user});err!=nil{
-		common.DisplayUnexceptAppError(w,err)
-	}else {
-		w.Header().Set("Content-Type","application/json")
+	user.HashPassword = nil
+	if j, err := json.Marshal(UserResource{Data: *user}); err != nil {
+		common.DisplayUnexpectedAppError(w, err)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		w.Write(j)
 	}
 
 }
 
-
+//POST /user/login
 func Login(w http.ResponseWriter, r *http.Request) {
 	var dataResource LoginResource
 	var token string
 
-	err:=json.NewDecoder(r.Body).Decode(&dataResource)
+	err := json.NewDecoder(r.Body).Decode(&dataResource)
 	if err != nil {
 		common.DisplayAppError(
 			w,
@@ -63,17 +63,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	loginModel:=dataResource.Data
-	loginUser:=models.User{
-		Email:loginModel.Email,
-		Password:loginModel.Password,
+	loginModel := dataResource.Data
+	loginUser := models.User{
+		Email:    loginModel.Email,
+		Password: loginModel.Password,
 	}
-	mc := NewContext()
+	mc := NewMongoContext()
 	defer mc.Close()
 	context := mc.GetCollection("users")
 	repo := &data.UserRepository{context}
 
-	if user,err:=repo.Login(loginUser);err!=nil{
+	if user, err := repo.Login(loginUser); err != nil {
 		common.DisplayAppError(
 			w,
 			err,
@@ -81,8 +81,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			http.StatusUnauthorized,
 		)
 		return
-	}else {
-		token,err=common.GenerateJWT(user.Email,"member")
+	} else {
+		token, err = common.GenerateJWT(user.Email, "member")
 		if err != nil {
 			common.DisplayAppError(
 				w,
@@ -92,18 +92,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			)
 			return
 		}
-		w.Header().Set("Content-Type","application/json")
-		user.HashPassword=nil
-		authUser:=AuthUserModel{
-			User:user,
-			Token:token,
+		w.Header().Set("Content-Type", "application/json")
+		user.HashPassword = nil
+		authUser := AuthUserModel{
+			User:  user,
+			Token: token,
 		}
-		j,err:=json.Marshal(AuthUserResource{Data:authUser})
-		if err != nil {
-			common.DisplayUnexceptAppError(w,err)
+		if j, err := json.Marshal(AuthUserResource{Data: authUser});err != nil{
+
+			common.DisplayUnexpectedAppError(w, err)
+		}else {
+			w.WriteHeader(http.StatusOK)
+			w.Write(j)
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Write(j)
 	}
 
 }

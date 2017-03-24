@@ -33,8 +33,8 @@ func DisplayAppError(w http.ResponseWriter, handlerError error, message string, 
 	}
 }
 //默认的处理
-func DisplayUnexceptAppError(w http.ResponseWriter,handlerError error)  {
-	DisplayAppError(w,handlerError,"An unexcepted error has occurred",http.StatusInternalServerError)
+func DisplayUnexpectedAppError(w http.ResponseWriter,handlerError error)  {
+	DisplayAppError(w,handlerError,"An unexpected error has occurred",http.StatusInternalServerError)
 }
 
 

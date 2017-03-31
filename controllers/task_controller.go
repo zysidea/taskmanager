@@ -18,8 +18,8 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	task := &bodyData
 	mc := NewMongoContext()
 	defer mc.Close()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	err := repo.CreateTask(task)
 	if err != nil {
 		common.DisplayAppError(
@@ -48,8 +48,8 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	task.Id = id
 	mc := NewMongoContext()
 	defer mc.Close()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	if err := repo.UpdateTask(*task); err != nil {
 		common.DisplayUnexpectedAppError(w, err)
 	} else {
@@ -62,8 +62,8 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	mc := NewMongoContext()
 	defer mc.Close()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	tasks := repo.GetAllTasks()
 	if j, err := json.Marshal(TasksResource{Data: tasks}); err != nil {
 		common.DisplayUnexpectedAppError(w, err)
@@ -79,8 +79,8 @@ func GetTaskById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	mc := NewMongoContext()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	task, err := repo.GetTaskById(id)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -105,8 +105,8 @@ func GetTaskByUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	mc := NewMongoContext()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	tasks := repo.GetTaskByUser(id)
 	if j, err := json.Marshal(TasksResource{Data: tasks}); err != nil {
 		common.DisplayUnexpectedAppError(w, err)
@@ -122,8 +122,8 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	mc := NewMongoContext()
-	context := mc.GetCollection("tasks")
-	repo := &data.TaskRepository{context}
+	collection := mc.GetCollection("tasks")
+	repo := &data.TaskRepository{collection}
 	err := repo.DeleteTask(id)
 	if err != nil {
 		common.DisplayUnexpectedAppError(w, err)

@@ -38,3 +38,13 @@ type(
 		Data []models.Task `json:"data"`
 	}
 )
+
+type(
+	NoteResource struct {
+		Data models.Note `json:"data"`
+	}
+
+	NotesResource struct {
+		Data []models.Note `json:"data"`
+	}
+)

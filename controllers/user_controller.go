@@ -35,6 +35,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			"Register fail",
 			http.StatusInternalServerError,
 		)
+		return
 	}
 
 	user.HashPassword = nil

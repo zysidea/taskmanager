@@ -28,6 +28,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 			"Create task fail",
 			http.StatusInternalServerError,
 		)
+		return
 	}
 	if j, err := json.Marshal(TaskResource{Data: *task}); err != nil {
 		common.DisplayUnexpectedAppError(w, err)

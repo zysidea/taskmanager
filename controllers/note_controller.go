@@ -21,6 +21,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request)  {
 			"Invalid note data",
 			http.StatusInternalServerError,
 		)
+		return
 	}
 	if j, err := json.Marshal(noteResource); err != nil {
 		common.DisplayUnexpectedAppError(w, err)
@@ -43,6 +44,7 @@ func UpdateNote(w http.ResponseWriter, r *http.Request) {
 			"Invalid note data",
 			http.StatusInternalServerError,
 		)
+		return
 	}
 	noteData:=&note.Data
 	noteData.Id=id

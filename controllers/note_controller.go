@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"taskmanager/common"
-	"taskmanager/models"
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 	"taskmanager/data"
